@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MY JUMP+ V2.0</title>
+<style>
+:root{
+  --accent:#e60012;
+  --accent2:#6b000f;
+  --bg:#0b0b0b;
+  --panel:#111;
+  --panel2:#1b1b1b;
+  --line:rgba(255,255,255,.11);
+  --text:#fff;
+  --muted:#aaa;
+  --onAccent:#fff;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  padding:0;
+  background:#050505;
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",Meiryo,sans-serif;
+}
+body.modal-open{overflow:hidden}
+button,input,textarea{font-family:inherit}
+button{cursor:pointer}
+.app{
+  max-width:430px;
+  min-height:100vh;
+  margin:0 auto;
+  padding:0 0 72px;
+  background:
+    radial-gradient(circle at top left,rgba(230,0,18,.18),transparent 32%),
+    repeating-linear-gradient(-45deg,rgba(255,255,255,.028) 0,rgba(255,255,255,.028) 2px,transparent 2px,transparent 9px),
+    var(--bg);
+}
+.appHeader{
+  position:relative;
+  padding:28px 18px 20px;
+  background:
+    repeating-linear-gradient(-45deg,rgba(255,255,255,.055) 0,rgba(255,255,255,.055) 2px,transparent 2px,transparent 9px),
+    linear-gradient(120deg,var(--accent),var(--accent2) 18%,#111 68%);
+}
+.appHeader h1{
+  margin:0;
+  font-size:42px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.02em;
+}
+.appHeader p{
+  margin:8px 0 0;
+  font-size:15px;
+  font-weight:900;
+  color:#fff;
+}
+.headerBtns{
+  position:absolute;
+  right:14px;
+  top:30px;
+  display:flex;
+  gap:8px;
+}
+.circleBtn{
+  width:46px;
+  height:46px;
+  border:0;
+  border-radius:50%;
+  background:rgba(0,0,0,.32);
+  color:#fff;
+  font-size:24px;
+  font-weight:950;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
+}
+.addCircle{background:var(--accent);font-size:31px}
+.primaryLink{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:56px;
+  width:min(320px,calc(100% - 36px));
+  margin:22px auto 0;
+  border:0;
+  border-radius:18px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;
+  font-size:20px;
+  font-weight:950;
+  text-align:center;
+  box-shadow:0 0 20px rgba(230,0,18,.32);
+}
+.content{padding:16px 14px}
+.feedbackTile{
+  border-left:7px solid var(--accent);
+  border-radius:18px;
+  padding:17px;
+  background:#18181c;
+  border:1px solid rgba(255,255,255,.08);
+  margin-bottom:18px;
+}
+.feedbackTile h3{margin:0 0 5px;font-size:20px;font-weight:950}
+.feedbackTile p{margin:0;color:#aaa;font-size:13px;font-weight:850}
+.sectionBar{
+  margin:18px -14px 12px;
+  min-height:54px;
+  padding:0 18px;
+  display:flex;
+  align-items:center;
+  border-left:8px solid var(--accent);
+  background:
+    repeating-linear-gradient(-45deg,rgba(255,255,255,.055) 0,rgba(255,255,255,.055) 2px,transparent 2px,transparent 9px),
+    #151515;
+  font-size:22px;
+  font-weight:950;
+}
+.booksGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.bookTile{
+  position:relative;
+  min-height:122px;
+  overflow:hidden;
+  border-radius:18px;
+  background:#151515;
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 10px 22px rgba(0,0,0,.28);
+}
+.bookTile.big{
+  grid-column:1/-1;
+  min-height:220px;
+}
+.thumb{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:18px;
+  color:#fff;
+  font-size:21px;
+  line-height:1.2;
+  font-weight:950;
+  letter-spacing:.02em;
+  background:
+    linear-gradient(135deg,rgba(230,0,18,.5),rgba(0,0,0,.85)),
+    repeating-linear-gradient(-45deg,rgba(255,255,255,.06) 0,rgba(255,255,255,.06) 2px,transparent 2px,transparent 9px);
+  background-size:cover;
+  background-position:center;
+}
+.bookTile.big .thumb{font-size:34px}
+.titleFade{
+  position:absolute;
+  left:0;right:0;bottom:0;
+  z-index:3;
+  padding:34px 12px 11px;
+  background:linear-gradient(transparent,rgba(0,0,0,.92));
+  font-size:15px;
+  font-weight:950;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.bookTile.big .titleFade{
+  font-size:23px;
+  padding:50px 16px 15px;
+}
+.editControls{
+  position:absolute;
+  top:9px;
+  right:9px;
+  z-index:10;
+  display:flex;
+  gap:5px;
+  opacity:0;
+  pointer-events:none;
+  transition:.15s;
+}
+.editing .editControls{opacity:1;pointer-events:auto}
+.editBtn{
+  min-width:31px;
+  height:31px;
+  border:0;
+  border-radius:10px;
+  background:rgba(0,0,0,.66);
+  color:#fff;
+  font-size:15px;
+  font-weight:950;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.editBtn.star.active{color:#ffdf4d}
+.bookTile:not(.big) .editControls{
+  left:8px;
+  right:8px;
+  justify-content:flex-start;
+}
+.bookTile:not(.big) .editBtn.deleteOnly{
+  position:absolute;
+  right:0;
+  bottom:calc(-122px + 31px);
+}
+.emptyState{
+  border-radius:18px;
+  padding:28px 18px;
+  background:#151515;
+  border:1px solid rgba(255,255,255,.1);
+  text-align:center;
+}
+.emptyState h3{margin:0 0 8px;font-size:20px}
+.emptyState p{margin:0;color:#aaa;line-height:1.7;font-weight:850}
+.rankGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.rankTile{
+  position:relative;
+  min-height:140px;
+  overflow:hidden;
+  border-radius:18px;
+  background:#151515;
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 10px 24px rgba(0,0,0,.35);
+}
+.rankTile.big{
+  grid-column:1/-1;
+  min-height:252px;
+  box-shadow:0 0 0 1px rgba(255,215,0,.25),0 10px 30px rgba(0,0,0,.42),0 0 24px rgba(255,215,0,.18);
+}
+.rankTile .medal{
+  position:absolute;
+  z-index:7;
+  object-fit:contain;
+  filter:drop-shadow(0 8px 12px rgba(0,0,0,.65));
+  pointer-events:none;
+}
+.rankTile.big .medal{width:128px;height:128px;top:10px;left:10px}
+.rankTile:not(.big) .medal{width:78px;height:78px;top:8px;left:8px}
+.rankHead{
+  min-height:64px;
+  border-radius:18px;
+  background:
+    repeating-linear-gradient(-45deg,rgba(255,255,255,.06) 0,rgba(255,255,255,.06) 2px,transparent 2px,transparent 8px),
+    linear-gradient(135deg,var(--accent),var(--accent2) 40%,#111 96%);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 14px 0 18px;
+  margin-bottom:12px;
+}
+.rankHead h2{margin:0;font-size:25px;font-weight:950}
+.shareTopBtn{
+  min-width:82px;
+  height:38px;
+  border:0;
+  border-radius:999px;
+  background:var(--accent);
+  color:#fff;
+  font-size:15px;
+  font-weight:950;
+  box-shadow:0 0 14px rgba(230,0,18,.4);
+}
+.hidden{display:none!important}
+
+/* bottom nav */
+.bottomNav{
+  position:fixed;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:430px;
+  z-index:80;
+  padding:5px 14px calc(5px + env(safe-area-inset-bottom));
+  background:rgba(14,14,14,.95);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-top:1px solid rgba(255,255,255,.12);
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:6px;
+}
+.navItem{
+  position:relative;
+  height:52px;
+  border:0;
+  background:transparent;
+  color:#999;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  font-size:11px;
+  line-height:1;
+  font-weight:800;
+  text-align:center;
+}
+.navItem svg{
+  width:25px;
+  height:25px;
+  stroke:currentColor;
+  stroke-width:2.5;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.navItem.center{color:var(--accent)}
+.navItem.center::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:45px;
+  height:4px;
+  border-radius:999px;
+  background:var(--accent);
+  box-shadow:0 0 10px rgba(230,0,18,.55);
+}
+
+/* modal/sheet common */
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:200;
+  display:none;
+  background:rgba(0,0,0,.72);
+}
+.modal.show{display:block}
+.sheet{
+  position:absolute;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:430px;
+  max-height:92vh;
+  overflow:auto;
+  padding:16px 14px calc(16px + env(safe-area-inset-bottom));
+  border-radius:24px 24px 0 0;
+  background:#101010;
+  border-top:1px solid rgba(255,255,255,.12);
+}
+.sheetTitle{
+  margin:0 0 14px;
+  font-size:24px;
+  font-weight:950;
+}
+.closePlain{
+  width:100%;
+  height:42px;
+  border:0;
+  background:transparent;
+  color:#aaa;
+  font-weight:900;
+  margin-top:8px;
+}
+.primaryBtn{
+  width:100%;
+  min-height:50px;
+  border:0;
+  border-radius:15px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;
+  font-size:17px;
+  font-weight:950;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+/* add screen */
+.modeTabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}
+.modeBtn{
+  min-height:36px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:#1e1e1e;color:#999;font-size:13px;font-weight:900;
+}
+.modeBtn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 12px rgba(230,0,18,.28)}
+.formSection{border-top:1px solid rgba(255,255,255,.075);padding-top:11px;margin-top:11px}
+.formSection:first-of-type{border-top:0;padding-top:0;margin-top:0}
+.formLabel{margin:0 0 7px;font-size:14px;font-weight:950}
+.searchHero{
+  border-radius:16px;padding:11px;background:radial-gradient(circle at top left,rgba(255,255,255,.17),transparent 32%),linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 14px rgba(230,0,18,.2)
+}
+.input{
+  width:100%;height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.32);color:#fff;padding:0 12px;font-size:15px;font-weight:900;outline:none;
+}
+.suggestions{display:none;margin-top:7px;overflow:hidden;border-radius:12px;background:rgba(10,10,10,.94);border:1px solid rgba(255,255,255,.14)}
+.suggestions.show{display:block}
+.suggestion{padding:10px;font-size:13px;font-weight:900;border-bottom:1px solid rgba(255,255,255,.08)}
+.suggestion span{color:var(--accent);margin-right:7px}
+.fieldGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field label{display:block;margin-bottom:5px;color:#ddd;font-size:12px;font-weight:950}
+.field input{width:100%;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#1b1b1b;color:#fff;padding:0 10px;font-size:13px;font-weight:850;outline:none}
+.previewWrap{display:flex;justify-content:center;align-items:center}
+.addPreview{
+  position:relative;width:100%;min-height:132px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:radial-gradient(circle at top left,rgba(230,0,18,.22),transparent 36%),repeating-linear-gradient(-45deg,rgba(255,255,255,.045) 0,rgba(255,255,255,.045) 2px,transparent 2px,transparent 9px),linear-gradient(135deg,#2a2a2a,#111);background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;text-align:center;padding:14px;color:#fff;font-size:17px;line-height:1.25;font-weight:950;cursor:pointer;box-shadow:inset 0 -40px 60px rgba(0,0,0,.24)
+}
+.addPreview.bigPreview{width:100%;aspect-ratio:16/9;min-height:132px}
+.addPreview.smallPreview{width:58%;max-width:210px;aspect-ratio:4/3;min-height:118px}
+.addPreview.hasImage{color:transparent}
+.addPreview.hasImage::after{content:"画像を変更";position:absolute;left:50%;bottom:10px;transform:translateX(-50%);padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.64);color:#fff;font-size:11px;font-weight:900}
+.sizeToggle{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sizeBtn{min-height:42px;border:1px solid rgba(255,255,255,.12);border-radius:13px;background:#1e1e1e;color:#999;font-size:15px;font-weight:950}
+.sizeBtn.active{color:#fff;background:var(--accent);border-color:var(--accent);box-shadow:0 0 12px rgba(230,0,18,.24)}
+.saveNotice{display:none;margin-top:12px;padding:12px;border-radius:14px;background:#171717;border:1px solid rgba(255,255,255,.1)}
+.saveNotice.show{display:block}
+
+/* help */
+.helpItem{border-radius:16px;overflow:hidden;background:#111;border:1px solid rgba(255,255,255,.1);border-left:6px solid var(--accent);margin-bottom:9px}
+.helpSummary{width:100%;min-height:55px;border:0;background:transparent;color:#fff;padding:0 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;font-size:16px;font-weight:950}
+.helpContent{display:none;padding:0 14px 15px;color:#ddd;line-height:1.75;font-size:14px;font-weight:800}.helpItem.open .helpContent{display:block}.arrow{color:var(--accent);transition:.18s}.helpItem.open .arrow{transform:rotate(90deg)}
+.commandGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.command{min-height:42px;padding:9px 10px;border-radius:12px;background:#202020;border:1px solid rgba(255,255,255,.09);display:flex;align-items:center;gap:7px;color:#fff;font-size:13px;font-weight:950}.command b{color:var(--accent);font-size:17px;min-width:22px;text-align:center}
+.subTitle{margin:14px 0 8px;color:#fff;font-size:14px;font-weight:950;border-left:4px solid var(--accent);padding-left:8px}
+.themeGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.themeBtn{min-height:66px;border:1px solid rgba(255,255,255,.12);border-radius:13px;background:#1b1b1b;color:#fff;font-size:9.5px;font-weight:900;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}.swatch{width:26px;height:26px;border-radius:999px;border:1px solid rgba(255,255,255,.25)}
+
+/* tutorial */
+.tutorial{
+  position:fixed;inset:0;z-index:500;display:none;background:#080808;color:#fff;
+}
+.tutorial.show{display:block}
+.slide{display:none;min-height:100vh;max-width:430px;margin:0 auto;padding:58px 20px calc(26px + env(safe-area-inset-bottom));flex-direction:column;background:radial-gradient(circle at top left,rgba(230,0,18,.34),transparent 32%),repeating-linear-gradient(-45deg,rgba(255,255,255,.035) 0,rgba(255,255,255,.035) 2px,transparent 2px,transparent 9px),#0b0b0b}
+.slide.active{display:flex}
+.logo{margin:0 0 22px;text-align:center;font-size:38px;line-height:1;font-weight:950}
+.tutTitle{margin:0 0 14px;font-size:29px;line-height:1.25;font-weight:950}.tutTitle span{color:#ff2635}
+.pill{display:inline-flex;align-items:center;width:max-content;max-width:100%;min-height:38px;padding:0 14px;margin:2px 0 16px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);font-size:13px;font-weight:950}
+.shot{position:relative;width:100%;min-height:330px;border-radius:22px;overflow:hidden;background:#111;border:1px solid rgba(255,255,255,.12);box-shadow:0 18px 46px rgba(0,0,0,.45)}
+.shot.small{min-height:205px}.shot:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(230,0,18,.18),transparent 36%),repeating-linear-gradient(-45deg,rgba(255,255,255,.045) 0,rgba(255,255,255,.045) 2px,transparent 2px,transparent 9px)}.shot:after{content:attr(data-label);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#9d9d9d;font-weight:950;line-height:1.5;padding:18px;white-space:pre-line}
+.dots{display:flex;justify-content:center;gap:7px;margin:16px 0 14px}.dots i{width:8px;height:8px;border-radius:50%;background:#555}.dots i.on{width:24px;border-radius:999px;background:var(--accent);box-shadow:0 0 10px rgba(230,0,18,.55)}
+.tutNav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto}.tutNav.single{grid-template-columns:1fr}.tutBtn{min-height:52px;border:0;border-radius:15px;background:#262626;color:#fff;font-size:16px;font-weight:950}.tutBtn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 18px rgba(230,0,18,.3)}
+.guide{display:grid;gap:14px;margin:8px 0 14px;font-size:15px;line-height:1.55;font-weight:900}.guideRow{display:flex;align-items:center;gap:10px;min-height:48px}.guideRow p{margin:0;white-space:nowrap;font-size:15px}.seriesMini{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:14px;background:var(--accent);font-size:14px;font-weight:950}.plusMini{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;min-width:46px;border-radius:50%;background:var(--accent);font-size:32px;font-weight:950}.twoShots{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 10px}.twoShots small{display:block;margin-top:7px;text-align:center;color:#ddd;font-size:12px;font-weight:900}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="appHeader">
+    <h1>MY JUMP+</h1>
+    <p>キミ専用ジャンプ+ビューワー！</p>
+    <div class="headerBtns">
+      <button class="circleBtn" id="helpBtn">?</button>
+      <button class="circleBtn" id="editBtn">⚙</button>
+      <button class="circleBtn addCircle" id="addBtn">+</button>
+    </div>
+    <button class="primaryLink" id="seriesBtn">連載作品一覧はこちら</button>
+  </header>
+
+  <main class="content">
+    <div class="feedbackTile">
+      <h3>フィードバック送信</h3>
+      <p>不具合報告や欲しい機能を送れるぞ！</p>
+    </div>
+
+    <section id="bookshelfView">
+      <div id="bookshelfSections"></div>
+    </section>
+
+    <section id="rankingView" class="hidden">
+      <div class="rankHead">
+        <h2>MYランキング</h2>
+        <button class="shareTopBtn" id="rankShareBtn">シェア</button>
+      </div>
+      <div id="rankArea"></div>
+    </section>
+  </main>
+</div>
+
+<nav class="bottomNav">
+  <button class="navItem" id="themeNav">
+    <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18h1.5a2 2 0 0 0 1.4-3.4l-.4-.4a1.9 1.9 0 0 1 1.4-3.2H17a4 4 0 0 0 0-8h-1.2A8.8 8.8 0 0 0 12 3z"/><circle cx="7.5" cy="10" r="1"/><circle cx="10.5" cy="7.5" r="1"/><circle cx="13.5" cy="7.5" r="1"/></svg>
+    <span>テーマ</span>
+  </button>
+  <button class="navItem center" id="centerNav">
+    <svg id="centerIconBooks" viewBox="0 0 24 24"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v3a5 5 0 0 1-10 0V4z"/><path d="M5 5H3v2a4 4 0 0 0 4 4"/><path d="M19 5h2v2a4 4 0 0 1-4 4"/></svg>
+    <span id="centerLabel">MYランキング</span>
+  </button>
+  <button class="navItem" id="shareNav">
+    <svg viewBox="0 0 24 24"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 15V3"/><path d="M7 8l5-5 5 5"/></svg>
+    <span>シェア</span>
+  </button>
+</nav>
+
+<!-- Add modal -->
+<div class="modal" id="addModal">
+  <div class="sheet">
+    <h2 class="sheetTitle">作品追加</h2>
+    <div class="modeTabs"><button class="modeBtn active" id="serialMode">連載作品</button><button class="modeBtn" id="oneshotMode">読切作品</button></div>
+    <div id="presetSection" class="formSection">
+      <div class="searchHero"><p class="formLabel">作品を探す</p><input class="input" id="presetInput" placeholder="作品名を入力"><div class="suggestions" id="suggestions"></div></div>
+    </div>
+    <div id="manualSection" class="formSection hidden">
+      <div class="fieldGrid"><div class="field"><label>作品名</label><input id="manualTitle" placeholder="作品名"></div><div class="field"><label>URL</label><input id="manualUrl" placeholder="https://..."></div></div>
+    </div>
+    <div class="formSection">
+      <p class="formLabel">推しコマを設定しよう！</p>
+      <div class="previewWrap"><div class="addPreview bigPreview" id="addPreview">タップで画像選択</div></div>
+      <input type="file" id="thumbInput" accept="image/*" class="hidden">
+    </div>
+    <div class="formSection">
+      <p class="formLabel">タイルサイズ</p>
+      <div class="sizeToggle"><button class="sizeBtn" data-size="small">小</button><button class="sizeBtn active" data-size="big">大</button></div>
+    </div>
+    <div class="saveNotice" id="saveNotice"><strong>作品を追加しました！</strong><br>MYランキングにも追加しますか？<br><br><button class="primaryBtn" id="addToRankAfterSave">MYランキングにも追加</button></div>
+    <br><button class="primaryBtn" id="saveWorkBtn">保存</button>
+    <button class="closePlain" data-close="addModal">閉じる</button>
+  </div>
+</div>
+
+<!-- Theme modal -->
+<div class="modal" id="themeModal"><div class="sheet">
+  <h2 class="sheetTitle">テーマ変更</h2>
+  <div class="themeGrid">
+    <button class="themeBtn" data-theme="red"><span class="swatch" style="background:#e60012"></span>JUMP<br>RED</button>
+    <button class="themeBtn" data-theme="black"><span class="swatch" style="background:#111"></span>NIGHT<br>BLACK</button>
+    <button class="themeBtn" data-theme="blue"><span class="swatch" style="background:#38bdf8"></span>SKY<br>BLUE</button>
+    <button class="themeBtn" data-theme="green"><span class="swatch" style="background:#34d399"></span>FOREST<br>GREEN</button>
+    <button class="themeBtn" data-theme="gold"><span class="swatch" style="background:#facc15"></span>ROYAL<br>GOLD</button>
+  </div>
+  <button class="closePlain" data-close="themeModal">閉じる</button>
+</div></div>
+
+<!-- Help modal -->
+<div class="modal" id="helpModal"><div class="sheet">
+  <h2 class="sheetTitle">MY JUMP+マニュアル</h2>
+  <div class="helpItem"><button class="helpSummary">MY JUMP+って何？ <span class="arrow">▶</span></button><div class="helpContent">ジャンプ＋作品を<br>キミ好みのサムネで整理できる<br>キミ専用のジャンプ＋ビューワーです。</div></div>
+  <div class="helpItem"><button class="helpSummary">本棚を作ろう <span class="arrow">▶</span></button><div class="helpContent">お気に入り作品を<br>自分だけの本棚に並べられます。<br><br>作品追加から<br>連載作品や読切作品を登録しましょう。<div class="subTitle">編集モード</div>編集ボタンを押すと各作品を編集できます。<div class="commandGrid"><div class="command"><b>🎨</b>サムネ変更</div><div class="command"><b>★</b>ランキングへ追加</div><div class="command"><b>大</b>タイルサイズ変更</div><div class="command"><b>↑</b>順番を上へ移動</div><div class="command"><b>↓</b>順番を下へ移動</div><div class="command"><b>×</b>本棚から削除</div></div></div></div>
+  <div class="helpItem"><button class="helpSummary">推しコマを設定しよう <span class="arrow">▶</span></button><div class="helpContent">作品ごとに好きなコマを設定できます。<br><br>作品追加画面でサムネタイルをタップすると画像を変更できます。</div></div>
+  <div class="helpItem"><button class="helpSummary">MYランキングを作ろう <span class="arrow">▶</span></button><div class="helpContent">お気に入り作品をTOP5形式でランキング化！<br><br>順位変更は ↑ ↓ で自由に変更できます。<div class="subTitle">ランキング編集</div><div class="commandGrid"><div class="command"><b>🎨</b>サムネ変更</div><div class="command"><b>↑</b>順位アップ</div><div class="command"><b>↓</b>順位ダウン</div><div class="command"><b>×</b>ランキングから削除</div></div></div></div>
+  <div class="helpItem"><button class="helpSummary">シェアしよう <span class="arrow">▶</span></button><div class="helpContent">MYランキングや読切コレクションを画像化してSNSへ投稿できます。<br><br>シェアボタンを押すだけ！</div></div>
+  <div class="helpItem"><button class="helpSummary">テーマを変えよう <span class="arrow">▶</span></button><div class="helpContent">テーマ変更から好きな見た目を選べます。<br>シェア画像にもテーマカラーが反映されます。</div></div>
+  <button class="closePlain" data-close="helpModal">閉じる</button>
+</div></div>
+
+<!-- Share modal -->
+<div class="modal" id="shareModal"><div class="sheet">
+  <h2 class="sheetTitle">シェア画像完成！</h2>
+  <p style="color:#aaa;font-weight:850">ランキング画面をスクショ風に画像化します。</p>
+  <div style="border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#050505"><img id="sharePreview" style="display:block;width:100%;height:auto" alt=""></div>
+  <br><button class="primaryBtn" id="downloadShare">画像を保存</button>
+  <button class="closePlain" data-close="shareModal">閉じる</button>
+</div></div>
+
+<!-- Tutorial -->
+<div class="tutorial" id="tutorial">
+  <section class="slide active">
+    <h1 class="logo">MY JUMP+</h1>
+    <h2 class="tutTitle">ジャンプ+作品を<br><span>キミ好みのサムネ</span>で、<br>キミだけの本棚を作ろう。</h2>
+    <div class="pill">MY JUMP+はキミ専用ジャンプ+ビューワー！</div>
+    <div class="shot" data-label="本棚スクショ枠&#10;assets/tutorial/tutorial-01-bookshelf.jpg"></div>
+    <div class="dots"><i class="on"></i><i></i><i></i></div>
+    <div class="tutNav single"><button class="tutBtn primary" data-next-tutorial>次へ</button></div>
+  </section>
+  <section class="slide">
+    <h2 class="tutTitle"><span>作品追加</span>してみよう！</h2>
+    <p style="font-weight:850">追加方法は超シンプル</p>
+    <div class="guide"><div class="guideRow"><div class="seriesMini">連載作品一覧はこちら</div><p>から選んでも</p></div><div class="guideRow"><div class="plusMini">＋</div><p>から追加してもOK</p></div></div>
+    <div class="twoShots"><div><div class="shot small" data-label="連載作品一覧枠"></div><small>連載作品一覧</small></div><div><div class="shot small" data-label="作品追加枠"></div><small>作品追加</small></div></div>
+    <div class="dots"><i></i><i class="on"></i><i></i></div>
+    <div class="tutNav"><button class="tutBtn" data-prev-tutorial>戻る</button><button class="tutBtn primary" data-next-tutorial>次へ</button></div>
+  </section>
+  <section class="slide">
+    <h2 class="tutTitle">ランキングをシェア！</h2>
+    <p style="font-weight:850;white-space:nowrap;font-size:14px">お気に入り作品をTOP5でランキング化。</p>
+    <p style="font-weight:850;white-space:nowrap;font-size:14px">シェアボタンでそのままSNSへ投稿しよう！</p>
+    <div class="shot small" data-label="MYランキング枠&#10;assets/tutorial/tutorial-03-ranking.jpg"></div><br>
+    <div class="shot small" data-label="シェア画像完成枠&#10;assets/tutorial/tutorial-03-share.jpg"></div>
+    <div class="dots"><i></i><i></i><i class="on"></i></div>
+    <div class="tutNav"><button class="tutBtn" data-prev-tutorial>戻る</button><button class="tutBtn primary" id="startAppBtn">MY JUMP+をはじめる</button></div>
+  </section>
+</div>
+
+<script>
+'use strict';
+
+// ---- Storage design: localStorage for settings, IndexedDB for large app data ----
+const LS_KEYS = {
+  tutorial:'myjump_v20_tutorial_done',
+  theme:'myjump_v20_theme'
+};
+const DB_NAME='myjump_v20_db';
+const DB_VERSION=1;
+let db=null;
+let state={
+  works:[],
+  ranking:[],
+  currentView:'bookshelf',
+  editing:false,
+  addMode:'serial',
+  pendingThumb:null,
+  pendingSize:'big',
+  pendingTitle:'',
+  pendingUrl:'',
+  lastSavedId:null,
+  tutorialIndex:0
+};
+
+const presets=[
+  {id:'ruri',title:'ルリドラゴン',url:'https://shonenjumpplus.com/',day:'月曜日',size:'big'},
+  {id:'drama',title:'ドラマクイン',url:'https://shonenjumpplus.com/',day:'月曜日',size:'small'},
+  {id:'thankyou',title:'サンキューピッチ',url:'https://shonenjumpplus.com/',day:'火曜日',size:'small'},
+  {id:'ghost',title:'ゴーストフィクサーズ',url:'https://shonenjumpplus.com/',day:'金曜日',size:'small'},
+  {id:'danda',title:'ダンダダン',url:'https://shonenjumpplus.com/',day:'水曜日',size:'small'}
+];
+const medalPaths=[
+  'assets/medals/medal_01.jpg',
+  'assets/medals/medal_02.jpg',
+  'assets/medals/medal_03.jpg',
+  'assets/medals/medal_04.jpg',
+  'assets/medals/medal_05.jpg'
+];
+
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    const req=indexedDB.open(DB_NAME,DB_VERSION);
+    req.onupgradeneeded=e=>{
+      const d=e.target.result;
+      if(!d.objectStoreNames.contains('works')) d.createObjectStore('works',{keyPath:'id'});
+      if(!d.objectStoreNames.contains('ranking')) d.createObjectStore('ranking',{keyPath:'id'});
+    };
+    req.onsuccess=()=>{db=req.result;resolve(db)};
+    req.onerror=()=>reject(req.error);
+  });
+}
+function tx(store,mode='readonly'){return db.transaction(store,mode).objectStore(store)}
+function getAll(store){return new Promise((res,rej)=>{const r=tx(store).getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)})}
+function put(store,val){return new Promise((res,rej)=>{const r=tx(store,'readwrite').put(val);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+function del(store,id){return new Promise((res,rej)=>{const r=tx(store,'readwrite').delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+function clearStore(store){return new Promise((res,rej)=>{const r=tx(store,'readwrite').clear();r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+
+async function seedIfEmpty(){
+  const works=await getAll('works');
+  if(works.length) return;
+  for(const p of presets){
+    await put('works',{...p,thumb:null,isPreset:true,createdAt:Date.now()});
+  }
+}
+async function loadState(){
+  state.works=(await getAll('works')).sort((a,b)=>{
+    const da=['月曜日','火曜日','水曜日','木曜日','金曜日','土曜日','日曜日','読切'].indexOf(a.day);
+    const dbb=['月曜日','火曜日','水曜日','木曜日','金曜日','土曜日','日曜日','読切'].indexOf(b.day);
+    return da-dbb || (a.createdAt||0)-(b.createdAt||0);
+  });
+  state.ranking=(await getAll('ranking')).sort((a,b)=>a.rank-b.rank);
+}
+function applyTheme(name){
+  const themes={
+    red:['#e60012','#6b000f','#0b0b0b'],
+    black:['#d8d8d8','#505050','#070707'],
+    blue:['#38bdf8','#0f5d9e','#071323'],
+    green:['#34d399','#14532d','#06120b'],
+    gold:['#facc15','#8f6f13','#080705']
+  };
+  const t=themes[name]||themes.red;
+  document.documentElement.style.setProperty('--accent',t[0]);
+  document.documentElement.style.setProperty('--accent2',t[1]);
+  document.documentElement.style.setProperty('--bg',t[2]);
+  localStorage.setItem(LS_KEYS.theme,name);
+}
+function byId(id){return document.getElementById(id)}
+function openModal(id){byId(id).classList.add('show');document.body.classList.add('modal-open')}
+function closeModal(id){byId(id).classList.remove('show');document.body.classList.remove('modal-open')}
+
+function render(){
+  renderView();
+  renderBookshelf();
+  renderRanking();
+}
+function renderView(){
+  const book=state.currentView==='bookshelf';
+  byId('bookshelfView').classList.toggle('hidden',!book);
+  byId('rankingView').classList.toggle('hidden',book);
+  byId('centerLabel').textContent=book?'MYランキング':'本棚';
+  const svg=byId('centerNav').querySelector('svg');
+  svg.innerHTML=book
+    ? '<path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v3a5 5 0 0 1-10 0V4z"/><path d="M5 5H3v2a4 4 0 0 0 4 4"/><path d="M19 5h2v2a4 4 0 0 1-4 4"/>'
+    : '<path d="M4 5.5c2.5-1 5-.8 8 1v13c-3-1.8-5.5-2-8-1V5.5z"/><path d="M20 5.5c-2.5-1-5-.8-8 1v13c3-1.8 5.5 2 8-1V5.5z"/>';
+}
+function groupWorks(){
+  const groups={};
+  for(const w of state.works){
+    const d=w.day||'読切';
+    if(!groups[d]) groups[d]=[];
+    groups[d].push(w);
+  }
+  return groups;
+}
+function renderBookshelf(){
+  const root=byId('bookshelfSections');
+  const groups=groupWorks();
+  const order=['月曜日','火曜日','水曜日','木曜日','金曜日','土曜日','日曜日','読切'];
+  root.innerHTML=order.filter(d=>groups[d]?.length).map(day=>{
+    return `<div class="sectionBar">${day}</div><div class="booksGrid">${groups[day].map(tileHtml).join('')}</div>`;
+  }).join('');
+  root.querySelectorAll('[data-act]').forEach(btn=>btn.onclick=handleBookAction);
+}
+function tileHtml(w){
+  const bg=w.thumb?`style="background-image:url('${w.thumb}')"`:'';
+  return `<article class="bookTile ${w.size==='big'?'big':''}" data-id="${w.id}">
+    <div class="thumb" ${bg}>${w.thumb?'':escapeHtml(w.title)}</div>
+    <div class="editControls">
+      <button class="editBtn" data-act="thumb" data-id="${w.id}">🎨</button>
+      <button class="editBtn star ${state.ranking.some(r=>r.id===w.id)?'active':''}" data-act="rank" data-id="${w.id}">★</button>
+      <button class="editBtn" data-act="size" data-id="${w.id}">大</button>
+      <button class="editBtn" data-act="up" data-id="${w.id}">↑</button>
+      <button class="editBtn" data-act="down" data-id="${w.id}">↓</button>
+      <button class="editBtn deleteOnly" data-act="delete" data-id="${w.id}">×</button>
+    </div>
+    <div class="titleFade">${escapeHtml(w.title)}</div>
+  </article>`;
+}
+function renderRanking(){
+  const root=byId('rankArea');
+  if(!state.ranking.length){
+    root.innerHTML='<div class="emptyState"><h3>まだランキング作品がありません</h3><p>本棚の★ボタンから<br>MYランキングに追加できます。</p></div>';
+    return;
+  }
+  root.innerHTML=`<div class="rankGrid">${state.ranking.slice(0,5).map((r,i)=>rankTileHtml(r,i)).join('')}</div>`;
+  root.querySelectorAll('[data-ract]').forEach(btn=>btn.onclick=handleRankAction);
+}
+function rankTileHtml(r,i){
+  const w=state.works.find(x=>x.id===r.id)||r;
+  const bg=w.thumb?`style="background-image:url('${w.thumb}')"`:'';
+  return `<article class="rankTile ${i===0?'big':''}">
+    <div class="thumb" ${bg}>${w.thumb?'':escapeHtml(w.title)}</div>
+    <img class="medal" src="${medalPaths[i]}" alt="${i+1}位">
+    <div class="editControls">
+      <button class="editBtn" data-ract="thumb" data-id="${r.id}">🎨</button>
+      <button class="editBtn up" data-ract="up" data-id="${r.id}">↑</button>
+      <button class="editBtn down" data-ract="down" data-id="${r.id}">↓</button>
+      <button class="editBtn deleteOnly" data-ract="delete" data-id="${r.id}">×</button>
+    </div>
+    <div class="titleFade">${escapeHtml(w.title)}</div>
+  </article>`;
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+
+async function handleBookAction(e){
+  const act=e.currentTarget.dataset.act, id=e.currentTarget.dataset.id;
+  const idx=state.works.findIndex(w=>w.id===id);
+  if(idx<0)return;
+  if(act==='size'){state.works[idx].size=state.works[idx].size==='big'?'small':'big';await put('works',state.works[idx])}
+  if(act==='delete'){await del('works',id); const rank=state.ranking.find(r=>r.id===id); if(rank) await del('ranking',id)}
+  if(act==='rank'){await toggleRanking(id)}
+  if(act==='up'||act==='down'){moveWork(idx,act==='up'?-1:1)}
+  if(act==='thumb'){alert('本実装ではここでサムネ変更を開きます')}
+  await loadState();render();
+}
+async function moveWork(idx,delta){
+  const ni=idx+delta;if(ni<0||ni>=state.works.length)return;
+  const a=state.works[idx],b=state.works[ni];
+  const ca=a.createdAt||Date.now(), cb=b.createdAt||Date.now()+1;
+  a.createdAt=cb;b.createdAt=ca;
+  await put('works',a);await put('works',b);
+}
+async function toggleRanking(id){
+  const exists=state.ranking.find(r=>r.id===id);
+  if(exists){await del('ranking',id);return}
+  if(state.ranking.length>=5){alert('MYランキングはTOP5までです');return}
+  await put('ranking',{id,rank:state.ranking.length+1});
+}
+async function handleRankAction(e){
+  const act=e.currentTarget.dataset.ract, id=e.currentTarget.dataset.id;
+  const idx=state.ranking.findIndex(r=>r.id===id);
+  if(idx<0)return;
+  if(act==='delete'){await del('ranking',id)}
+  if(act==='up'&&idx>0){[state.ranking[idx-1].rank,state.ranking[idx].rank]=[state.ranking[idx].rank,state.ranking[idx-1].rank]; await put('ranking',state.ranking[idx-1]); await put('ranking',state.ranking[idx])}
+  if(act==='down'&&idx<state.ranking.length-1){[state.ranking[idx+1].rank,state.ranking[idx].rank]=[state.ranking[idx].rank,state.ranking[idx+1].rank]; await put('ranking',state.ranking[idx+1]); await put('ranking',state.ranking[idx])}
+  if(act==='thumb') alert('本実装ではここでサムネ変更を開きます');
+  await loadState();render();
+}
+
+// Add screen
+function resetAddForm(){
+  state.addMode='serial';state.pendingThumb=null;state.pendingSize='big';state.pendingTitle='';state.pendingUrl='';state.lastSavedId=null;
+  byId('serialMode').classList.add('active');byId('oneshotMode').classList.remove('active');
+  byId('presetSection').classList.remove('hidden');byId('manualSection').classList.add('hidden');
+  byId('presetInput').value='';byId('manualTitle').value='';byId('manualUrl').value='';
+  byId('addPreview').style.backgroundImage='';byId('addPreview').classList.remove('hasImage','smallPreview');byId('addPreview').classList.add('bigPreview');byId('addPreview').textContent='タップで画像選択';
+  document.querySelectorAll('.sizeBtn').forEach(b=>b.classList.toggle('active',b.dataset.size==='big'));
+  byId('saveNotice').classList.remove('show');
+}
+function setAddMode(mode){
+  state.addMode=mode;
+  byId('serialMode').classList.toggle('active',mode==='serial');byId('oneshotMode').classList.toggle('active',mode==='oneshot');
+  byId('presetSection').classList.toggle('hidden',mode!=='serial');byId('manualSection').classList.toggle('hidden',mode!=='oneshot');
+}
+function renderSuggestions(){
+  const q=byId('presetInput').value.trim().toLowerCase();
+  const list=q?presets.filter(p=>p.title.toLowerCase().includes(q)).slice(0,6):[];
+  byId('suggestions').innerHTML=list.map((p,i)=>`<div class="suggestion" data-i="${i}"><span>${p.day[0]}</span>${escapeHtml(p.title)}</div>`).join('');
+  byId('suggestions').classList.toggle('show',!!list.length);
+  [...byId('suggestions').children].forEach((el,i)=>el.onclick=()=>{const p=list[i];state.pendingTitle=p.title;state.pendingUrl=p.url;byId('presetInput').value=p.title;byId('addPreview').textContent=p.title;byId('suggestions').classList.remove('show')});
+}
+async function saveWork(){
+  let title,url,day;
+  if(state.addMode==='serial'){
+    const p=presets.find(x=>x.title===byId('presetInput').value.trim());
+    title=p?.title || byId('presetInput').value.trim();
+    url=p?.url || 'https://shonenjumpplus.com/';
+    day=p?.day || '月曜日';
+  }else{
+    title=byId('manualTitle').value.trim();
+    url=byId('manualUrl').value.trim();
+    day='読切';
+  }
+  if(!title){alert('作品名を入力してください');return}
+  const id='work_'+Date.now();
+  await put('works',{id,title,url,day,size:state.pendingSize,thumb:state.pendingThumb,isPreset:false,createdAt:Date.now()});
+  state.lastSavedId=id;
+  byId('saveNotice').classList.add('show');
+  await loadState();render();
+}
+async function addLastToRanking(){
+  if(state.lastSavedId){await toggleRanking(state.lastSavedId); await loadState(); render(); byId('saveNotice').innerHTML='<strong>MYランキングに追加しました！</strong>'}
+}
+
+// Share canvas
+function loadImg(src){return new Promise(res=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>res(null);im.src=src})}
+function round(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+async function generateShare(){
+  if(!state.ranking.length){alert('ランキング作品がありません');return}
+  const W=1080,H=1350,c=document.createElement('canvas'),ctx=c.getContext('2d');c.width=W;c.height=H;
+  ctx.fillStyle='#080808';ctx.fillRect(0,0,W,H);
+  const bg=ctx.createRadialGradient(W/2,0,20,W/2,0,820);bg.addColorStop(0,'rgba(230,0,18,.22)');bg.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  round(ctx,42,42,W-84,H-84,34);ctx.fillStyle='#111';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.09)';ctx.lineWidth=2;ctx.stroke();
+  round(ctx,72,72,W-144,88,20);ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#e60012';ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='900 44px sans-serif';ctx.textAlign='left';ctx.fillText('MYランキング',108,130);
+  const imgs=await Promise.all(medalPaths.map(loadImg));
+  let y=200,gap=24;
+  for(let i=0;i<Math.min(5,state.ranking.length);i++){
+    const r=state.ranking[i],w=state.works.find(x=>x.id===r.id)||r,big=i===0;
+    let x=92,tw=W-184,th=big?300:210;
+    if(!big){tw=(W-184-gap)/2;x=92+((i-1)%2)*(tw+gap);if((i-1)%2===0&&i>1)y+=210+gap}
+    round(ctx,x,y,tw,th,18);ctx.fillStyle='#151515';ctx.fill();ctx.save();ctx.clip();
+    let g=ctx.createLinearGradient(x,y,x+tw,y+th);g.addColorStop(0,i===0?'#4a0008':'#222');g.addColorStop(.55,i===0?'#e60012':'#333');g.addColorStop(1,'#050505');ctx.fillStyle=g;ctx.fillRect(x,y,tw,th);
+    if(w.thumb){const im=await loadImg(w.thumb);if(im)ctx.drawImage(im,x,y,tw,th)}
+    ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font=`900 ${big?42:26}px sans-serif`;ctx.fillText(w.title,x+tw/2,y+th/2);
+    let fade=ctx.createLinearGradient(x,y+th*.45,x,y+th);fade.addColorStop(0,'rgba(0,0,0,0)');fade.addColorStop(1,'rgba(0,0,0,.92)');ctx.fillStyle=fade;ctx.fillRect(x,y,tw,th);
+    ctx.fillStyle='#fff';ctx.textAlign='left';ctx.font=`900 ${big?30:22}px sans-serif`;ctx.fillText(w.title,x+20,y+th-20);
+    if(imgs[i])ctx.drawImage(imgs[i],x+(big?8:7),y+(big?8:7),big?156:96,big?156:96);
+    ctx.restore(); if(big)y+=th+gap;
+  }
+  ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#e60012';ctx.font='900 50px sans-serif';ctx.textAlign='right';ctx.fillText('MY JUMP+',W-92,H-118);
+  byId('sharePreview').src=c.toDataURL('image/png');
+  byId('downloadShare').onclick=()=>{const a=document.createElement('a');a.href=byId('sharePreview').src;a.download='myjump-ranking.png';a.click()};
+  openModal('shareModal');
+}
+
+// Tutorial
+function showTutorialIfNeeded(){
+  // render base app first. If tutorial fails, app still remains visible.
+  if(localStorage.getItem(LS_KEYS.tutorial)==='true') return;
+  byId('tutorial').classList.add('show');
+  document.body.classList.add('modal-open');
+}
+function showTutorialSlide(i){
+  const slides=[...document.querySelectorAll('.slide')];
+  state.tutorialIndex=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,idx)=>s.classList.toggle('active',idx===state.tutorialIndex));
+}
+function closeTutorial(){
+  localStorage.setItem(LS_KEYS.tutorial,'true');
+  byId('tutorial').classList.remove('show');
+  document.body.classList.remove('modal-open');
+}
+
+// Events
+byId('centerNav').onclick=()=>{state.currentView=state.currentView==='bookshelf'?'ranking':'bookshelf';render()}
+byId('editBtn').onclick=()=>{state.editing=!state.editing;document.body.classList.toggle('editing',state.editing);byId('editBtn').textContent=state.editing?'✓':'⚙'}
+byId('addBtn').onclick=()=>{resetAddForm();openModal('addModal')}
+byId('themeNav').onclick=()=>openModal('themeModal')
+byId('helpBtn').onclick=()=>openModal('helpModal')
+byId('shareNav').onclick=()=>generateShare()
+byId('rankShareBtn').onclick=()=>generateShare()
+byId('seriesBtn').onclick=()=>alert('本実装では連載作品一覧画面を開きます')
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close))
+byId('serialMode').onclick=()=>setAddMode('serial')
+byId('oneshotMode').onclick=()=>setAddMode('oneshot')
+byId('presetInput').oninput=renderSuggestions
+byId('manualTitle').oninput=()=>{if(!state.pendingThumb)byId('addPreview').textContent=byId('manualTitle').value||'タップで画像選択'}
+byId('addPreview').onclick=()=>byId('thumbInput').click()
+byId('thumbInput').onchange=e=>{const f=e.target.files?.[0];if(!f)return;const rd=new FileReader();rd.onload=ev=>{state.pendingThumb=ev.target.result;byId('addPreview').style.backgroundImage=`url('${state.pendingThumb}')`;byId('addPreview').classList.add('hasImage')};rd.readAsDataURL(f)}
+document.querySelectorAll('.sizeBtn').forEach(b=>b.onclick=()=>{state.pendingSize=b.dataset.size;document.querySelectorAll('.sizeBtn').forEach(x=>x.classList.toggle('active',x===b));byId('addPreview').classList.toggle('bigPreview',state.pendingSize==='big');byId('addPreview').classList.toggle('smallPreview',state.pendingSize==='small')})
+byId('saveWorkBtn').onclick=saveWork
+byId('addToRankAfterSave').onclick=addLastToRanking
+document.querySelectorAll('.themeBtn').forEach(b=>b.onclick=()=>{applyTheme(b.dataset.theme);closeModal('themeModal')})
+document.querySelectorAll('.helpSummary').forEach(b=>b.onclick=()=>b.parentElement.classList.toggle('open'))
+document.querySelectorAll('[data-next-tutorial]').forEach(b=>b.onclick=()=>showTutorialSlide(state.tutorialIndex+1))
+document.querySelectorAll('[data-prev-tutorial]').forEach(b=>b.onclick=()=>showTutorialSlide(state.tutorialIndex-1))
+byId('startAppBtn').onclick=closeTutorial
+
+async function boot(){
+  applyTheme(localStorage.getItem(LS_KEYS.theme)||'red');
+  try{
+    await openDB();
+    await seedIfEmpty();
+    await loadState();
+  }catch(err){
+    console.error(err);
+    // Fallback: even if IndexedDB fails, show seeded in-memory bookshelf.
+    state.works=presets.map(p=>({...p,thumb:null,isPreset:true,createdAt:Date.now()}));
+    state.ranking=[];
+  }
+  state.currentView='bookshelf'; // always start from bookshelf
+  render();
+  setTimeout(showTutorialIfNeeded,0);
+}
+boot();
+</script>
+</body>
+</html>
